@@ -1,1 +1,65 @@
 <?php
+
+/**
+ * @file
+ * Handles the creation/display of islandora:sp-pdf objects.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function islandora_document_menu() {
+  return array(
+    'admin/islandora/document' => array(
+      'title' => 'Document Collection',
+      'description' => 'Configure the document Solution Pack.',
+      'page callback' => 'drupal_get_form',
+      'access arguments' => array('administer site configuration'),
+      'page arguments' => array('islandora_document_admin'),
+      'file' => 'includes/admin.form.inc',
+      'type' => MENU_NORMAL_ITEM,
+    ),
+  );
+}
+
+function islandora_document_islandora_required_objects(IslandoraTuque $connection) {
+  $module_path = drupal_get_path('module', 'islandora_document');
+  // Document Content Model.
+  $document_content_model = $connection->repository->constructObject('islandora:document');
+  $document_content_model->owner = 'fedoraAdmin';
+  $document_content_model->label = 'Islandora Document Content Model';
+  $document_content_model->models = 'fedora-system:ContentModel-3.0';
+  // DS-COMPOSITE-MODEL Datastream.
+  $datastream = $document_content_model->constructDatastream('DS-COMPOSITE-MODEL', 'X');
+  $datastream->label = 'DS-COMPOSITE-MODEL';
+  $datastream->mimetype = 'text/xml';
+  $datastream->setContentFromFile("$module_path/xml/islandora_document_ds_composite_model.xml", FALSE);
+  $document_content_model->ingestDatastream($datastream);
+  // Document Collection.
+  $document_collection = $connection->repository->constructObject('islandora:sp_document_collection');
+  $document_collection->owner = 'fedoraAdmin';
+  $document_collection->label = 'Document Collection';
+  $document_collection->models = 'islandora:collectionCModel';
+  $document_collection->relationships->add(FEDORA_RELS_EXT_URI, 'isMemberOfCollection', 'islandora:root');
+  // Collection Policy Datastream.
+  $datastream = $document_collection->constructDatastream('COLLECTION_POLICY', 'X');
+  $datastream->label = 'Collection policy';
+  $datastream->mimetype = 'text/xml';
+  $datastream->setContentFromFile("$module_path/xml/islandora_document_collection_policy.xml", FALSE);
+  $document_collection->ingestDatastream($datastream);
+  // TN Datastream.
+  $datastream = $document_collection->constructDatastream('TN', 'M');
+  $datastream->label = 'Thumbnail';
+  $datastream->mimetype = 'image/png';
+  $datastream->setContentFromFile("$module_path/images/folder.png", FALSE);
+  $document_collection->ingestDatastream($datastream);
+  return array(
+    'islandora_document' => array(
+      'title' => 'Islandora Document',
+      'objects' => array(
+        $document_content_model,
+        $document_collection,
+      ),
+    ),
+  );
+}
