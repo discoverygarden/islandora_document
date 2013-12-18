@@ -75,7 +75,6 @@ function islandora_document_islandora_required_objects(IslandoraTuque $connectio
  */
 function islandora_document_islandora_xml_form_builder_forms() {
   $module_path = drupal_get_path('module', 'islandora_document');
-  dsm('hrer');
   return array(
     'Document MODS form' => array(
       'form_file' => "$module_path/xml/islandora_document_form_mods.xml",
@@ -116,10 +115,19 @@ function islandora_document_islandora_sp_document_islandora_ingest_steps() {
 
 /**
  * Implements hook_CMODEL_PID_islandora_derivative().
- *//*
-function islandora_pdf_islandora_sp_pdf_islandora_derivative() {
+ */
+function islandora_document_islandora_sp_document_islandora_derivative() {
   $derivatives = array();
   $derivatives[] = array(
+    'source_dsid' => 'OBJ',
+    'destination_dsid' => 'PDF',
+    'weight' => '0',
+    'function' => array(
+      'islandora_document_add_pdf_derivative',
+    ),
+    'file' => drupal_get_path('module', 'islandora_document') . '/includes/derivatives.inc',
+  );
+ /* $derivatives[] = array(
     'source_dsid' => 'OBJ',
     'destination_dsid' => 'TN',
     'weight' => '0',
@@ -147,6 +155,6 @@ function islandora_pdf_islandora_sp_pdf_islandora_derivative() {
       ),
       'file' => drupal_get_path('module', 'islandora_pdf') . '/includes/derivatives.inc',
     );
-  }
+  }*/
   return $derivatives;
 }

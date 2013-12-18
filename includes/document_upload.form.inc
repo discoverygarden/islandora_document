@@ -18,10 +18,14 @@
  */
 function islandora_document_document_upload_form(array $form, array &$form_state) {
   $upload_size = min((int) ini_get('post_max_size'), (int) ini_get('upload_max_filesize'));
-  $extensions = array('pdf');
+  module_load_include('inc', 'islandora_jodconverter', 'includes/utilities');
+
+  $pdf = islandora_jodconverter_get_format('pdf');
+  $pdf['from'][] = 'pdf';
+  $extensions = array(implode(' ', $pdf['from']));
   $form = array();
   $form['file'] = array(
-    '#title' => t('PDF File'),
+    '#title' => t('Document File'),
     '#type' => 'managed_file',
     '#required' => TRUE,
     '#description' => t('Select file to upload.<br/>Files must be less than <b>@size MB.</b><br/>Allowed file types: <b>@ext.</b>', array('@size' => $upload_size, '@ext' => $extensions[0])),
@@ -41,7 +45,7 @@ function islandora_document_document_upload_form(array $form, array &$form_state
       '#default_value' => FALSE,
     );
     $form['text'] = array(
-      '#title' => t('PDF text'),
+      '#title' => t('Document text'),
       '#type' => 'managed_file',
       '#required' => FALSE,
       '#description' => t('Select text file to upload.<br/>Files must be less than <b>@size MB.</b><br/>Allowed file types: <b>@ext.</b><br />This file is optional.', array('@size' => $upload_size, '@ext' => 'txt')),
@@ -79,11 +83,11 @@ function islandora_document_document_upload_form_submit(array $form, array &$for
   else {
     $ds = $object['OBJ'];
   }
-  $pdf_file = file_load($form_state['values']['file']);
-  $pdf_path = drupal_realpath($pdf_file->uri);
-  $ds->setContentFromFile($pdf_path, FALSE);
-  $ds->label = $pdf_file->filename;
-  $ds->mimetype = $pdf_file->filemime;
+  $file = file_load($form_state['values']['file']);
+  $path = drupal_realpath($file->uri);
+  $ds->setContentFromFile($path, FALSE);
+  $ds->label = $file->filename;
+  $ds->mimetype = $file->filemime;
 
   if (isset($form_state['values']['text']) && ($form_state['values']['text'] > 0)) {
     if (empty($object['FULL_TEXT'])) {
