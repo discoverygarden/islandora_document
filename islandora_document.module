@@ -25,7 +25,7 @@ function islandora_document_menu() {
 function islandora_document_islandora_required_objects(IslandoraTuque $connection) {
   $module_path = drupal_get_path('module', 'islandora_document');
   // Document Content Model.
-  $document_content_model = $connection->repository->constructObject('islandora:document');
+  $document_content_model = $connection->repository->constructObject('islandora:sp_document');
   $document_content_model->owner = 'fedoraAdmin';
   $document_content_model->label = 'Islandora Document Content Model';
   $document_content_model->models = 'fedora-system:ContentModel-3.0';
@@ -34,6 +34,12 @@ function islandora_document_islandora_required_objects(IslandoraTuque $connectio
   $datastream->label = 'DS-COMPOSITE-MODEL';
   $datastream->mimetype = 'text/xml';
   $datastream->setContentFromFile("$module_path/xml/islandora_document_ds_composite_model.xml", FALSE);
+  $document_content_model->ingestDatastream($datastream);
+  // ISLANDORA-CM Datastream.
+  $datastream = $document_content_model->constructDatastream('ISLANDORACM', 'M');
+  $datastream->label = 'Islandora content model information';
+  $datastream->mimetype = 'text/xml';
+  $datastream->setContentFromFile("$module_path/xml/islandora_document_content_model.xml", FALSE);
   $document_content_model->ingestDatastream($datastream);
   // Document Collection.
   $document_collection = $connection->repository->constructObject('islandora:sp_document_collection');
@@ -62,4 +68,85 @@ function islandora_document_islandora_required_objects(IslandoraTuque $connectio
       ),
     ),
   );
+}
+
+/**
+ * Implements hook_islandora_xml_form_builder_forms().
+ */
+function islandora_document_islandora_xml_form_builder_forms() {
+  $module_path = drupal_get_path('module', 'islandora_document');
+  dsm('hrer');
+  return array(
+    'Document MODS form' => array(
+      'form_file' => "$module_path/xml/islandora_document_form_mods.xml",
+    ),
+  );
+}
+
+/**
+ * Implements hook_islandora_content_model_forms_form_associations().
+ */
+function islandora_document_islandora_content_model_forms_form_associations() {
+  return array(
+    'islandora_document_mods_form' => array(
+      'content_model' => 'islandora:sp_document',
+      'form_name' => 'Document MODS form',
+      'dsid' => 'MODS',
+      'title_field' => array('titleInfo', 'title'),
+      'transform' => 'mods_to_dc.xsl',
+      'template' => FALSE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_islandora_ingest_steps().
+ */
+function islandora_document_islandora_sp_document_islandora_ingest_steps() {
+  return array(
+    'islandora_document_file_upload' => array(
+      'weight' => 10,
+      'type' => 'form',
+      'form_id' => 'islandora_document_document_upload_form',
+      'module' => 'islandora_document',
+      'file' => 'includes/document_upload.form.inc',
+    ),
+  );
+}
+
+/**
+ * Implements hook_CMODEL_PID_islandora_derivative().
+ *//*
+function islandora_pdf_islandora_sp_pdf_islandora_derivative() {
+  $derivatives = array();
+  $derivatives[] = array(
+    'source_dsid' => 'OBJ',
+    'destination_dsid' => 'TN',
+    'weight' => '0',
+    'function' => array(
+      'islandora_pdf_add_tn_derivative',
+    ),
+    'file' => drupal_get_path('module', 'islandora_pdf') . '/includes/derivatives.inc',
+  );
+  $derivatives[] = array(
+    'source_dsid' => 'OBJ',
+    'destination_dsid' => 'PREVIEW',
+    'weight' => '1',
+    'function' => array(
+      'islandora_pdf_add_preview_derivative',
+    ),
+    'file' => drupal_get_path('module', 'islandora_pdf') . '/includes/derivatives.inc',
+  );
+  if (variable_get('islandora_pdf_create_fulltext', FALSE)) {
+    $derivatives[] = array(
+      'source_dsid' => 'OBJ',
+      'destination_dsid' => 'FULL_TEXT',
+      'weight' => '2',
+      'function' => array(
+        'islandora_pdf_add_fulltext_derivative',
+      ),
+      'file' => drupal_get_path('module', 'islandora_pdf') . '/includes/derivatives.inc',
+    );
+  }
+  return $derivatives;
 }
