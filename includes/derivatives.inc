@@ -14,12 +14,12 @@
  * @return string
  *   The file path to the unmanaged derivative source file.
  */
-function islandora_document_get_derivative_source_as_unmanaged_file(AbstractObject $object) {
+function islandora_document_get_derivative_source_as_unmanaged_file(AbstractObject $object, $dsid = 'OBJ') {
   $mime_detect = new MimeDetect();
-  $ext = $mime_detect->getExtension($object['OBJ']->mimeType);
+  $ext = $mime_detect->getExtension($object[$dsid]->mimeType);
   $file_name = str_replace(':', '-', $object->id);
-  $file_uri = file_create_filename("{$file_name}.OBJ.{$ext}", 'temporary://');
-  $object['OBJ']->getContent($file_uri);
+  $file_uri = file_create_filename("{$file_name}_$dsid.{$ext}", 'temporary://');
+  $object[$dsid]->getContent($file_uri);
   return $file_uri;
 }
 
@@ -39,7 +39,7 @@ function islandora_document_get_derivative_source_as_unmanaged_file(AbstractObje
 function islandora_document_add_tn_derivative(AbstractObject $object, $force = FALSE) {
   $width = variable_get('islandora_document_thumbnail_width', 200);
   $height = variable_get('islandora_document_thumbnail_height', 200);
-  $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object);
+  $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object, 'PDF');
   $results = islandora_document_add_jpg_derivative($object, $file_uri, 'TN', $width, $height, $force);
   file_unmanaged_delete($file_uri);
   return $results;
@@ -61,8 +61,8 @@ function islandora_document_add_tn_derivative(AbstractObject $object, $force = F
 function islandora_document_add_fulltext_derivative(AbstractObject $object, $force = FALSE) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   if (!isset($object['FULL_TEXT']) || (isset($object['FULL_TEXT']) && $force === TRUE)) {
-    if (!isset($object['OBJ'])) {
-      return islandora_document_missing_obj_datastream($object->id);
+    if (!isset($object['PDF'])) {
+      return islandora_document_missing_datastream($object->id,$dsid);
     }
     $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object);
     $dsid = "FULL_TEXT";
@@ -148,7 +148,7 @@ function islandora_document_add_fulltext_derivative(AbstractObject $object, $for
 function islandora_document_add_preview_derivative(AbstractObject $object, $force = FALSE) {
   $width = variable_get('islandora_document_preview_width', 500);
   $height = variable_get('islandora_document_preview_height', 700);
-  $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object);
+  $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object,'PDF');
   $results = islandora_document_add_jpg_derivative($object, $file_uri, 'PREVIEW', $width, $height, $force);
   file_unmanaged_delete($file_uri);
   return $results;
@@ -177,8 +177,8 @@ function islandora_document_add_preview_derivative(AbstractObject $object, $forc
  */
 function islandora_document_add_jpg_derivative(AbstractObject $object, $file_uri, $dsid, $width, $height, $force) {
   if (!isset($object[$dsid]) || (isset($object[$dsid]) && $force === TRUE)) {
-    if (!isset($object['OBJ'])) {
-      return islandora_document_missing_obj_datastream($object->id);
+    if (!isset($object['PDF'])) {
+      return islandora_document_missing_datastream($object->id, $dsid);
     }
     $derivative_file_uri = islandora_document_create_jpg_derivative($file_uri, $dsid, $width, $height);
     file_unmanaged_delete($file_uri);
@@ -352,19 +352,16 @@ function islandora_document_add_pdf_derivative(AbstractObject $object, $force = 
    module_load_include('inc', 'islandora_jodconverter', 'includes/utilities');
   if (!isset($object['PDF']) || (isset($object['PDF']) && $force === TRUE)) {
     if (!isset($object['OBJ'])) {
-      return islandora_document_missing_obj_datastream($object->id);
+      return islandora_document_missing_datastream($object->id,'OBJ');
     }
     $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object);
     $dsid = "PDF";
     $from = drupal_realpath($file_uri);
-    $to = file_create_filename('pdffile.pdf', 'temporary://');
-    dsm($to);
-    $derivative_file_uri = drupal_realpath($to);
+    $derivative_file_uri = drupal_realpath('temporary://pdffile.pdf');
     $message = islandora_jodconverter_convert($from, $derivative_file_uri);
-    dsm($message);
     file_unmanaged_delete($file_uri);
-    
     $success = islandora_document_add_datastream($object, $dsid, $derivative_file_uri);
+    file_unmanaged_delete($derivative_file_uri);
     if ($success === TRUE) {
       return array(
         'success' => TRUE,
@@ -393,6 +390,5 @@ function islandora_document_add_pdf_derivative(AbstractObject $object, $force = 
       );
     }
   }
-  file_unmanaged_delete($to);
   return $success;
 }
