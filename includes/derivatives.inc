@@ -352,7 +352,7 @@ function islandora_document_add_pdf_derivative(AbstractObject $object, $force = 
    module_load_include('inc', 'islandora_jodconverter', 'includes/utilities');
   if (!isset($object['PDF']) || (isset($object['PDF']) && $force === TRUE)) {
     if (!isset($object['OBJ'])) {
-      return islandora_document_missing_datastream($object->id,'OBJ');
+      return islandora_document_no_obj_datastream($object->id,'OBJ');
     }
     $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object);
     $dsid = "PDF";
