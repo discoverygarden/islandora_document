@@ -88,6 +88,7 @@ function islandora_document_document_upload_form_submit(array $form, array &$for
   $ds->setContentFromFile($path, FALSE);
   $ds->label = $file->filename;
   $ds->mimetype = $file->filemime;
+  file_unmanaged_delete($path);
 
   if (isset($form_state['values']['text']) && ($form_state['values']['text'] > 0)) {
     if (empty($object['FULL_TEXT'])) {
