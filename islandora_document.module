@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Handles the creation/display of islandora:sp-pdf objects.
+ * Handles the creation/display of islandora:sp-document objects.
  */
 
 /**
@@ -36,6 +36,9 @@ function islandora_document_theme($existing, $type, $theme, $path) {
   );
 }
 
+/**
+ * Implements hook_islandora_required_objects().
+ */
 function islandora_document_islandora_required_objects(IslandoraTuque $connection) {
   $module_path = drupal_get_path('module', 'islandora_document');
   // Document Content Model.

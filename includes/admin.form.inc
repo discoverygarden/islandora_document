@@ -22,9 +22,9 @@ function islandora_document_admin($form, &$form_state) {
     $confirmation_message = '<img src="' . url('misc/watchdog-error.png') . '"/> '
         . t('Unable to find pdftotext executable at !url', array('!url' => "<strong>$islandora_document_path_to_pdftotext</strong>"));
   }
-  
+
   // @Todo: add a configuation to choose which Derivatives to build by call the
-  // jodconverter's get format function. 
+  // jodconverter's get format function.
   $form = array();
   $form['islandora_document_get_'] = array(
     '#type' => 'fieldset',
