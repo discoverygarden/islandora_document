@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * This file contains all admin functions.
@@ -7,7 +8,7 @@
 /**
  * Admin form function.
  */
-function islandora_document_admin($form, &$form_state) {
+function islandora_document_admin(array $form, array &$form_state) {
 
   if (isset($form_state['values']['islandora_document_path_to_pdftotext'])) {
     $islandora_document_path_to_pdftotext = $form_state['values']['islandora_document_path_to_pdftotext'];
@@ -23,13 +24,10 @@ function islandora_document_admin($form, &$form_state) {
         . t('Unable to find pdftotext executable at !url', array('!url' => "<strong>$islandora_document_path_to_pdftotext</strong>"));
   }
 
-  // @Todo: add a configuation to choose which Derivatives to build by call the
+  // @Todo: add a configuration to choose which Derivatives to build by call the
   // jodconverter's get format function.
   $form = array();
-  $form['islandora_document_get_'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('TEXT'),
-  );
+
   // AJAX wrapper for url checking.
   $form['islandora_document_url_fieldset'] = array(
     '#type' => 'fieldset',
@@ -43,22 +41,17 @@ function islandora_document_admin($form, &$form_state) {
     '#default_value' => variable_get('islandora_document_allow_text_upload', FALSE),
   );
 
-  $form['islandora_document_url_fieldset']['islandora_documentf_create_fulltext'] = array(
+  $form['islandora_document_url_fieldset']['islandora_document_create_fulltext'] = array(
     '#type' => 'checkbox',
-    '#title' => t("Extract text streams from PDFs using pdftotext"),
-    '#description' => t("Extracted text streams are appended to PDFs as FULL_TEXT datastreams and are indexed into Solr. Uploading a text file takes priority over text stream extraction.
-                           </br><strong>Note:</strong> PDFs that contain visible text do not necessarily contain text streams (e.g. images scanned and saved as PDFs). Consider converting text-filled images with no text streams to TIFFs and using the !book with !ocr enabled.", array(
+    '#title' => t("Extract text from PDFs using pdftotext"),
+    '#description' => t("Extracted text is stored in the FULL_TEXT datastreams and is indexed into Solr. If a text file is uploaded it will be used instead of the extracted text.
+                           </br><strong>Note:</strong> PDFs that contain visible text do not necessarily contain text (e.g. images scanned and saved as PDFs). Consider converting text-filled images with no text streams to TIFFs and using the !book with !ocr enabled.", array(
                              '!book' => l(t('Book Solution Pack'), 'https://wiki.duraspace.org/display/ISLANDORA711/Book+Solution+Pack'),
                              '!ocr' => l(t('OCR'), 'https://wiki.duraspace.org/display/ISLANDORA711/Islandora+OCR'),
                            )),
     '#default_value' => variable_get('islandora_document_create_fulltext', FALSE),
   );
 
-  $form['islandora_document_url_fieldset']['wrapper'] = array(
-    '#prefix' => '<div id="islandora-url">',
-    '#suffix' => '</div>',
-    '#type' => 'markup',
-  );
   $form['islandora_document_url_fieldset']['wrapper'] = array(
     '#prefix' => '<div id="islandora-url">',
     '#suffix' => '</div>',
@@ -143,7 +136,7 @@ function islandora_document_admin($form, &$form_state) {
 /**
  * Admin form validate function.
  */
-function islandora_document_admin_validate($form, &$form_state) {
+function islandora_document_admin_validate(array $form, array &$form_state) {
   if ($form_state['values']['islandora_document_create_fulltext']) {
     $islandora_document_path_to_pdftotext = $form_state['values']['islandora_document_path_to_pdftotext'];
     exec($islandora_document_path_to_pdftotext, $output, $return_value);

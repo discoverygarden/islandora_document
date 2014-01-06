@@ -31,6 +31,7 @@ class IslandoraDocumentIngestTestCase extends IslandoraCollectionWebTestCase {
       'islandora',
       'islandora_document',
       'islandora_basic_collection',
+      'islandora_jodconverter',
       'imagemagick',
     ));
   }
@@ -52,8 +53,8 @@ class IslandoraDocumentIngestTestCase extends IslandoraCollectionWebTestCase {
 
     $label = $this->randomName(16);
     $suffix = $this->randomName(16);
-    $collectionpid = 'islandora:' . $suffix;
-    $this->createTestCollection($label, 'islandora:sp_pdf', $collectionpid);
+    $collection_pid = 'islandora:' . $suffix;
+    $this->createTestCollection($label, 'islandora:sp_document', $collection_pid);
     $edit = array(
       'islandora_document_allow_text_upload' => TRUE,
       'islandora_document_create_fulltext' => FALSE,
@@ -69,11 +70,11 @@ class IslandoraDocumentIngestTestCase extends IslandoraCollectionWebTestCase {
     $this->drupalPost('admin/config/media/image-toolkit', $edit, 'Save configuration');
 
     // Attempts to create an object.
-    $path = 'islandora/object/' . $collectionpid . '/manage/overview/ingest';
+    $path = 'islandora/object/' . $collection_pid . '/manage/overview/ingest';
     $file = drupal_get_path('module', 'islandora_document') . '/tests/fixtures/IslandoraDocumentSolutionPackConfiguration.doc';
     $text = drupal_get_path('module', 'islandora_document') . '/tests/fixtures/IslandoraDocumentSolutionPackConfiguration.txt';
     $handle = fopen($file, "r");
-    $contents = fread($handle, filesize($file));
+    fread($handle, filesize($file));
     fclose($handle);
     $edit = array(
       'files[file]' => $file,
@@ -81,10 +82,8 @@ class IslandoraDocumentIngestTestCase extends IslandoraCollectionWebTestCase {
       'files[text]' => $text,
     );
     $this->drupalPost($path, $edit, t('Ingest'));
-    $this->assertText('New Object', 'PDF was created', 'Islandora');
-    $path = $this->url;
-    $docpath = $path . '/datastream/OBJ/view';
-    $this->assertLinkByHref($docpath, 0, 'PDF PREVIEW datastream found on view page', 'Islandora');
+    $this->assertText('New Object', 'Object was created', 'Islandora');
+    $this->assertRaw('/datastream/PREVIEW/view', 'PDF PREVIEW datastream found on view page', 'Islandora');
     $this->assertRaw('/datastream/OBJ/download', 'PDF download link found on view page', 'Islandora');
 
     // Determines whether or not the appropriate datastreams were created.
@@ -102,7 +101,6 @@ class IslandoraDocumentIngestTestCase extends IslandoraCollectionWebTestCase {
 
     // Determines whether or not the image datastreams are valid.
     $datastreams = array(
-      array('OBJ', 'doc'),
       array(
         'FULL_TEXT',
         'text',
@@ -115,10 +113,10 @@ class IslandoraDocumentIngestTestCase extends IslandoraCollectionWebTestCase {
 
     // Checks for a fully-black PREVIEW datastream. This is a check for a known
     // issue (hopefully fixed) with some PDF files where ImageMagick creates
-    // fully-blackthumbnails and previews instead of appropriate images. We find
-    // the scan marker, then find how big the scan header is so we know how much
-    // to offset by, and if the total binary value of the scan data - minus the
-    // last byte - is 0, then the image is completely black.
+    // fully-black thumbnails and previews instead of appropriate images. We
+    // find the scan marker, then find how big the scan header is so we know
+    // how much to offset by, and if the total binary value of the scan data
+    // - minus the last byte - is 0, then the image is completely black.
     if (isset($object['PREVIEW'])) {
       $preview = bin2hex($object['PREVIEW']->content);
       $preview_scanmarker = strpos($preview, 'ffda');
@@ -131,6 +129,6 @@ class IslandoraDocumentIngestTestCase extends IslandoraCollectionWebTestCase {
 
     // Attempts to delete the object and then collection.
     $this->deleteObject($object);
-    $this->deleteTestCollection($collectionpid);
+    $this->deleteTestCollection($collection_pid);
   }
 }

@@ -2,23 +2,23 @@
 
 /**
  * @file
- * islandora_pdf.install
+ * islandora_document.install
  */
 
 /**
  * Implements hook_install().
  *
- * @see islandora_pdf_islandora_required_objects()
+ * @see islandora_document_islandora_required_objects()
  */
-function islandora_pdf_install() {
+function islandora_document_install() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
-  islandora_install_solution_pack('islandora_pdf');
+  islandora_install_solution_pack('islandora_document');
 }
 
 /**
  * Implements hook_uninstall().
  */
-function islandora_pdf_uninstall() {
+function islandora_document_uninstall() {
   module_load_include('inc', 'islandora', 'includes/solution_packs');
-  islandora_install_solution_pack('islandora_pdf', 'uninstall');
+  islandora_install_solution_pack('islandora_document', 'uninstall');
 }

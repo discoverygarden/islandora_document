@@ -38,8 +38,8 @@ function islandora_document_document_upload_form(array $form, array &$form_state
     ),
   );
 
-  if (variable_get('islandora_pdf_allow_text_upload', FALSE)) {
-    $form['islandora_pdf_text_upload'] = array(
+  if (variable_get('islandora_document_allow_text_upload', FALSE)) {
+    $form['islandora_document_text_upload'] = array(
       '#type' => 'checkbox',
       '#title' => t("Add text file to this upload?"),
       '#default_value' => FALSE,
@@ -58,7 +58,7 @@ function islandora_document_document_upload_form(array $form, array &$form_state
       ),
       '#states' => array(
         'visible' => array(
-          ':input[name="islandora_pdf_text_upload"]' => array('checked' => TRUE),
+          ':input[name="islandora_document_text_upload"]' => array('checked' => TRUE),
         ),
       ),
     );
@@ -67,7 +67,7 @@ function islandora_document_document_upload_form(array $form, array &$form_state
 }
 
 /**
- * Addes the uploaded file into the ingestable objects 'OBJ' datastream.
+ * Adds the uploaded file into the ingestible objects 'OBJ' datastream.
  *
  * @param array $form
  *   The drupal form.
@@ -75,7 +75,7 @@ function islandora_document_document_upload_form(array $form, array &$form_state
  *   The drupal form state.
  */
 function islandora_document_document_upload_form_submit(array $form, array &$form_state) {
-  $object = $form_state['islandora']['objects'][0];
+  $object = islandora_ingest_form_get_object($form_state);
   if (empty($object['OBJ'])) {
     $ds = $object->constructDatastream('OBJ', 'M');
     $object->ingestDatastream($ds);

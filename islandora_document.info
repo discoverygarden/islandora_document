@@ -1,7 +1,10 @@
 name = "Islandora Document"
 description = "A default Islandora Repository module to handle documents"
 dependencies[] = islandora
+dependencies[] = file
 dependencies[] = imagemagick
+dependencies[] = islandora_jodconverter
+files[] = tests/islandora_document_ingest_purge.test
 package = Islandora
 core = 7.x
 version = 7.x-dev
