@@ -30,3 +30,4 @@ script:
   - drush coder-review --reviews=production,security,style,i18n,potx,sniffer islandora_document
   - phpcpd --names *.module,*.inc,*.test sites/all/modules/islandora_solution_pack_document
   - drush test-run --uri=http://localhost:8081 "Islandora Document"
+  - drush wd-show --count=500
