@@ -1,4 +1,4 @@
-﻿Islandora Document Solution Pack 
+Islandora Document Solution Pack 
 
 Configuration Document
 ________________
