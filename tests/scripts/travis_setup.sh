@@ -13,6 +13,6 @@ soffice -headless -accept="socket,host=127.0.0.1,port=8100;urp;" -nofirststartwi
 echo 'Open Office Started'
 wget http://downloads.sourceforge.net/project/jodconverter/JODConverter/2.2.2/jodconverter-2.2.2.zip
 unzip jodconverter-2.2.2.zip
-cp jodconverter-2.2.2 $HOME/drupal-*/sites/all/libraries
+cp -r jodconverter-2.2.2 $HOME/drupal-*/sites/all/libraries
 
 sleep 20
