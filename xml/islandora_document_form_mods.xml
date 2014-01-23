@@ -307,7 +307,7 @@
             </element>
             <element name="hidden_genre">
                 <properties>
-                    <type>textfield</type>
+                    <type>value</type>
                     <access>TRUE</access>
                     <default_value>article</default_value>
                     <required>FALSE</required>
