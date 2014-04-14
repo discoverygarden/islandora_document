@@ -8,5 +8,5 @@ files[] = tests/islandora_document_ingest_purge.test
 package = Islandora Solution Packs
 core = 7.x
 version = 7.x-dev
-configure = admin/islandora/document
+configure = admin/islandora/solution_pack_config/document
 stylesheets[all][] = css/islandora_document.theme.css
