@@ -59,7 +59,7 @@ class IslandoraDocumentIngestTestCase extends IslandoraCollectionWebTestCase {
       'islandora_document_allow_text_upload' => TRUE,
       'islandora_document_create_fulltext' => FALSE,
     );
-    $this->drupalPost('admin/islandora/document', $edit, 'Save configuration');
+    $this->drupalPost('admin/islandora/solution_pack_config/document', $edit, 'Save configuration');
     $edit = array(
       'image_toolkit' => 'imagemagick',
     );
