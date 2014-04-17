@@ -10,9 +10,9 @@
  */
 function islandora_document_menu() {
   return array(
-    'admin/islandora/document' => array(
-      'title' => 'Document Collection',
-      'description' => 'Configure the document Solution Pack.',
+    'admin/islandora/solution_pack_config/document' => array(
+      'title' => 'Document Solution Pack',
+      'description' => 'Define ingest behavior and configure document display.',
       'page callback' => 'drupal_get_form',
       'access arguments' => array('administer site configuration'),
       'page arguments' => array('islandora_document_admin'),
