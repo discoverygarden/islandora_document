@@ -379,7 +379,7 @@ function islandora_document_add_pdf_derivative(AbstractObject $object, $force = 
     $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object);
     $dsid = "PDF";
     $from = drupal_realpath($file_uri);
-    $derivative_file_uri = drupal_realpath('temporary://pdffile.pdf');
+    $derivative_file_uri = drupal_realpath(file_create_filename('pdffile.pdf','temporary://'));
     if ($object['OBJ']->mimetype == 'application/pdf') {
       $success = islandora_document_add_datastream($object, $dsid, $from);
       file_unmanaged_delete($file_uri);
