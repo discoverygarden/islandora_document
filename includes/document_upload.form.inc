@@ -23,12 +23,13 @@ function islandora_document_document_upload_form(array $form, array &$form_state
   $pdf = islandora_jodconverter_get_format('pdf');
   $pdf['from'][] = 'pdf';
   $extensions = array(implode(' ', $pdf['from']));
+
   $form = array();
   $form['file'] = array(
     '#title' => t('Document File'),
     '#type' => 'managed_file',
     '#required' => TRUE,
-    '#description' => t('Select file to upload.<br/>Files must be less than <strong>@size MB.</strong><br/>Allowed file types: <strong@ext.</strong>', array('@size' => $upload_size, '@ext' => $extensions[0])),
+    '#description' => t('Select file to upload.<br/>Files must be less than <strong>@size MB.</strong><br/>Allowed file types: <strong>@ext.</strong>', array('@size' => $upload_size, '@ext' => $extensions[0])),
     '#default_value' => isset($form_state['values']['files']) ? $form_state['values']['files'] : NULL,
     '#upload_location' => 'temporary://',
     '#upload_validators' => array(
