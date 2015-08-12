@@ -15,15 +15,29 @@
   <dsTypeModel ID="PDF">
     <form MIME="application/pdf"></form>
   </dsTypeModel>
-  <dsTypeModel ID="FULL_TEXT">
-    <form MIME="text/plain"></form>
-  </dsTypeModel>
   <dsTypeModel ID="TECHMD">
     <form MIME="text/xml"></form>
   </dsTypeModel>
   <dsTypeModel ID="OBJ">
-    <form MIME="text/xml"></form>
+    <form MIME="application/vnd.oasis.opendocument.text"></form>
+    <form MIME="application/vnd.sun.xml.writer"></form>
+    <form MIME="application/rtf"></form>
+    <form MIME="application/msword"></form>
+    <form MIME="application/vnd.wordperfect"></form>
+    <form MIME="text/plain"></form>
+    <form MIME="text/html"></form>
+    <form MIME="application/vnd.oasis.opendocument.spreadsheet"></form>
+    <form MIME="application/vnd.sun.xml.calc"></form>
+    <form MIME="application/vnd.ms-excel"></form>
+    <form MIME="text/csv"></form>
+    <form MIME="text/tab-separated-values"></form>
+    <form MIME="application/vnd.oasis.opendocument.presentation"></form>
+    <form MIME="application/vnd.sun.xml.impress"></form>
+    <form MIME="application/vnd.ms-powerpoint"></form>
     <form MIME="application/pdf"></form>
+  </dsTypeModel>
+  <dsTypeModel ID="FULL_TEXT">
+      <form MIME="text/plain"></form>
   </dsTypeModel>
   <dsTypeModel ID="TN">
     <form MIME="image/jpeg"></form>
