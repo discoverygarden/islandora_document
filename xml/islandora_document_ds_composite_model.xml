@@ -1,5 +1,5 @@
 
-<dsCompositeModel xmlns="info:fedora/fedora-system:def/dsCompositeModel#"> 
+<dsCompositeModel xmlns="info:fedora/fedora-system:def/dsCompositeModel#">
   <dsTypeModel ID="DC">
     <form FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" MIME="text/xml"></form>
   </dsTypeModel>
@@ -11,12 +11,6 @@
   </dsTypeModel>
   <dsTypeModel ID="RELS-INT" optional="true">
     <form FORMAT_URI="info:fedora/fedora-system:FedoraRELSInt-1.0" MIME="application/rdf+xml"></form>
-  </dsTypeModel>
-  <dsTypeModel ID="PDF">
-    <form MIME="application/pdf"></form>
-  </dsTypeModel>
-  <dsTypeModel ID="TECHMD">
-    <form MIME="text/xml"></form>
   </dsTypeModel>
   <dsTypeModel ID="OBJ">
     <form MIME="application/vnd.oasis.opendocument.text"></form>
@@ -39,6 +33,12 @@
     <form MIME="application/vnd.sun.xml.impress"></form>
     <form MIME="application/vnd.ms-powerpoint"></form>
     <form MIME="application/pdf"></form>
+  </dsTypeModel>
+  <dsTypeModel ID="PDF">
+    <form MIME="application/pdf"></form>
+  </dsTypeModel>
+  <dsTypeModel ID="TECHMD">
+    <form MIME="text/xml"></form>
   </dsTypeModel>
   <dsTypeModel ID="FULL_TEXT">
       <form MIME="text/plain"></form>
