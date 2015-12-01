@@ -34,7 +34,8 @@
     <form MIME="application/vnd.ms-powerpoint"></form>
     <form MIME="application/pdf"></form>
   </dsTypeModel>
-  <dsTypeModel ID="PDF">
+  <!-- XXX: "PDF" is optional just to effect the bind order in the zip_importer. -->
+  <dsTypeModel ID="PDF" optional="true">
     <form MIME="application/pdf"></form>
   </dsTypeModel>
   <dsTypeModel ID="TECHMD">
