@@ -112,7 +112,7 @@ function islandora_document_islandora_xml_form_builder_forms() {
 /**
  * Implements hook_xml_form_builder_form_associations().
  */
-function islandora_document_xml_form_builder_form_associations() {
+function islandora_document_islanora_xml_form_builder_form_associations() {
   $message = islandora_deprecated('7.x-1.8', t('Use xml_form_builder_form_associations instead.'));
   trigger_error(filter_xss($message), E_USER_DEPRECATED);
   return array(
