@@ -96,9 +96,9 @@ function islandora_document_islandora_sp_document_islandora_view_object($object,
 }
 
 /**
- * Implements hook_islandora_xml_form_builder_forms().
+ * Implements hook_xml_form_builder_forms().
  */
-function islandora_document_islandora_xml_form_builder_forms() {
+function islandora_document_xml_form_builder_forms() {
   $module_path = drupal_get_path('module', 'islandora_document');
   return array(
     'Document MODS form' => array(
@@ -108,9 +108,9 @@ function islandora_document_islandora_xml_form_builder_forms() {
 }
 
 /**
- * Implements hook_islandora_xml_form_builder_form_associations().
+ * Implements hook_xml_form_builder_form_associations().
  */
-function islandora_document_islandora_xml_form_builder_form_associations() {
+function islandora_document_xml_form_builder_form_associations() {
   return array(
     'islandora_document_mods_form' => array(
       'content_model' => 'islandora:sp_document',
