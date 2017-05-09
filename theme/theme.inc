@@ -6,6 +6,8 @@
  */
 
 /**
+ * Implements template_preprocess_HOOK()
+ *
  * Prepares variables for islandora-pdf templates.
  *
  * Default template: islandora-pdf.tpl.php.
@@ -14,7 +16,7 @@
  *   An associative array containing:
  *   - islandora_object: An AbstractObject from Islandora.
  */
-function islandora_document_preprocess_islandora_document(&$variables) {
+function template_preprocess_islandora_document(&$variables) {
   drupal_add_js('misc/form.js');
   drupal_add_js('misc/collapse.js');
   $islandora_object = $variables['islandora_object'];
