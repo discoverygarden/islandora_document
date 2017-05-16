@@ -44,11 +44,11 @@ function islandora_document_admin(array $form, array &$form_state) {
   $form['islandora_document_url_fieldset']['islandora_document_create_fulltext'] = array(
     '#type' => 'checkbox',
     '#title' => t("Extract text from PDFs using pdftotext"),
-    '#description' => t("Extracted text is stored in the FULL_TEXT datastreams and is indexed into Solr. If a text file is uploaded it will be used instead of the extracted text.
-                           </br><strong>Note:</strong> PDFs that contain visible text do not necessarily contain text (e.g. images scanned and saved as PDFs). Consider converting text-filled images with no text streams to TIFFs and using the !book with !ocr enabled.", array(
-                             '!book' => l(t('Book Solution Pack'), 'https://wiki.duraspace.org/display/ISLANDORA711/Book+Solution+Pack'),
-                             '!ocr' => l(t('OCR'), 'https://wiki.duraspace.org/display/ISLANDORA711/Islandora+OCR'),
-                           )),
+    '#description' => t("Extracted text is stored in the FULL_TEXT datastreams and is indexed into Solr. If a text file is uploaded it will be used instead of the extracted text. </br><strong>Note:</strong> PDFs that contain visible text do not necessarily contain text (e.g. images scanned and saved as PDFs). Consider converting text-filled images with no text streams to TIFFs and using the !book with !ocr enabled.",
+  array(
+    '!book' => l(t('Book Solution Pack'), 'https://wiki.duraspace.org/display/ISLANDORA711/Book+Solution+Pack'), '!ocr' => l(t('OCR'), 'https://wiki.duraspace.org/display/ISLANDORA711/Islandora+OCR'),
+  )
+    ),
     '#default_value' => variable_get('islandora_document_create_fulltext', FALSE),
   );
 

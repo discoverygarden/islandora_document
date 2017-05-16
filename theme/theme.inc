@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements template_preprocess_HOOK()
+ * Implements template_preprocess_HOOK().
  *
  * Prepares variables for islandora-pdf templates.
  *
