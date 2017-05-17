@@ -3,9 +3,6 @@ BUILD STATUS
 Current build status:
 [![Build Status](https://travis-ci.org/discoverygarden/islandora_solution_pack_document.png?branch=7.x)](https://travis-ci.org/discoverygarden/islandora_solution_pack_document)
 
-CI Server:
-http://jenkins.discoverygarden.ca
-
 SUMMARY
 -------
 Islandora document solution pack provides a collection and a content model for users’ documents.
