@@ -16,7 +16,3 @@ wget http://alpha.library.yorku.ca/jodconverter-2.2.2.zip
 unzip jodconverter-2.2.2.zip
 cp -r jodconverter-2.2.2 $HOME/drupal-*/sites/all/libraries
 sleep 20
-
-echo 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
- phpenv versions
-echo 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
