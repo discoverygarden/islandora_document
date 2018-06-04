@@ -1,0 +1,5 @@
+islandora_document.admin:
+  route_name: islandora_document.admin
+  parent: islandor.solution_packs_admin
+  title: 'Document Solution Pack'
+  description: 'Define ingest behavior and configuration.'
