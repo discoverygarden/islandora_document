@@ -39,7 +39,7 @@ function islandora_document_document_upload_form(array $form, array &$form_state
     ),
   );
 
-  if (variable_get('islandora_document_allow_text_upload', FALSE)) {
+  if (\Drupal::config('islandora_document.settings')->get('islandora_document_allow_text_upload')) {
     $form['islandora_document_text_upload'] = array(
       '#type' => 'checkbox',
       '#title' => t("Add text file to this upload?"),
@@ -85,7 +85,7 @@ function islandora_document_document_upload_form_submit(array $form, array &$for
     $ds = $object['OBJ'];
   }
   $file = file_load($form_state['values']['file']);
-  $path = drupal_realpath($file->uri);
+  $path = \Drupal::service("file_system")->realpath($file->uri);
   $ds->setContentFromFile($path, FALSE);
   $ds->label = $file->filename;
   $ds->mimetype = $file->filemime;
@@ -99,7 +99,7 @@ function islandora_document_document_upload_form_submit(array $form, array &$for
       $ds = $object['FULL_TEXT'];
     }
     $text_file = file_load($form_state['values']['text']);
-    $text_path = drupal_realpath($text_file->uri);
+    $text_path = \Drupal::service("file_system")->realpath($text_file->uri);
     $ds->setContentFromFile($text_path, FALSE);
     $ds->label = $text_file->filename;
     $ds->mimetype = $text_file->filemime;

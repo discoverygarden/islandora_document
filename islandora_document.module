@@ -91,7 +91,16 @@ function islandora_document_islandora_required_objects(IslandoraTuque $connectio
  * Implements hook_CMODEL_PID_islandora_view_object().
  */
 function islandora_document_islandora_sp_document_islandora_view_object($object, $page_number, $page_size) {
-  $output = theme('islandora_document', array('islandora_object' => $object));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $output = theme('islandora_document', array('islandora_object' => $object));
+
   return array('' => $output);
 }
 
@@ -170,7 +179,7 @@ function islandora_document_islandora_sp_document_islandora_derivative() {
     ),
     'file' => drupal_get_path('module', 'islandora_document') . '/includes/derivatives.inc',
   );
-  if (variable_get('islandora_document_create_fulltext', FALSE)) {
+  if (\Drupal::config('islandora_document.settings')->get('islandora_document_create_fulltext')) {
     $derivatives[] = array(
       'source_dsid' => 'PDF',
       'destination_dsid' => 'FULL_TEXT',

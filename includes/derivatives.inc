@@ -41,8 +41,8 @@ function islandora_document_get_derivative_source_as_unmanaged_file(AbstractObje
  * @see hook_islandora_derivative()
  */
 function islandora_document_add_tn_derivative(AbstractObject $object, $force = FALSE) {
-  $width = variable_get('islandora_document_thumbnail_width', 200);
-  $height = variable_get('islandora_document_thumbnail_height', 200);
+  $width = \Drupal::config('islandora_document.settings')->get('islandora_document_thumbnail_width');
+  $height = \Drupal::config('islandora_document.settings')->get('islandora_document_thumbnail_height');
   $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object, 'PDF');
   $results = islandora_document_add_jpg_derivative($object, $file_uri, 'TN', $width, $height, $force);
   file_unmanaged_delete($file_uri);
@@ -70,10 +70,10 @@ function islandora_document_add_fulltext_derivative(AbstractObject $object, $for
     }
     $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object, 'PDF');
     $dsid = "FULL_TEXT";
-    $source = $source = drupal_realpath($file_uri);
-    $executable = variable_get('islandora_document_path_to_pdftotext', '/usr/bin/pdftotext');
+    $source = $source = \Drupal::service("file_system")->realpath($file_uri);
+    $executable = \Drupal::config('islandora_document.settings')->get('islandora_document_path_to_pdftotext');
     $temp = file_create_filename('fulltext.txt', 'temporary://');
-    $derivative_file_uri = drupal_realpath($temp);
+    $derivative_file_uri = \Drupal::service("file_system")->realpath($temp);
     $command = "$executable $source $derivative_file_uri";
     exec($command, $exec_out, $return_code);
     file_unmanaged_delete($file_uri);
@@ -150,8 +150,8 @@ function islandora_document_add_fulltext_derivative(AbstractObject $object, $for
  * @see hook_islandora_derivative()
  */
 function islandora_document_add_preview_derivative(AbstractObject $object, $force = FALSE) {
-  $width = variable_get('islandora_document_preview_width', 500);
-  $height = variable_get('islandora_document_preview_height', 700);
+  $width = \Drupal::config('islandora_document.settings')->get('islandora_document_preview_width');
+  $height = \Drupal::config('islandora_document.settings')->get('islandora_document_preview_height');
   $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object, 'PDF');
   $results = islandora_document_add_jpg_derivative($object, $file_uri, 'PREVIEW', $width, $height, $force);
   file_unmanaged_delete($file_uri);
@@ -253,12 +253,17 @@ function islandora_document_add_jpg_derivative(AbstractObject $object, $file_uri
  * @see hook_islandora_derivative()
  */
 function islandora_document_create_jpg_derivative($file_uri, $dsid, $width, $height) {
-  $source = drupal_realpath($file_uri) . '[0]';
+  $source = \Drupal::service("file_system")->realpath($file_uri) . '[0]';
   // Get the base name of the source file.
   $base = pathinfo($source, PATHINFO_FILENAME);
   $temp = file_create_filename("$base.$dsid.jpg", 'temporary://');
-  $dest = drupal_realpath($temp);
-  $args['quality'] = '-quality ' . escapeshellarg(variable_get('imagemagick_quality', 75));
+  $dest = \Drupal::service("file_system")->realpath($temp);
+  // @FIXME
+// // @FIXME
+// // This looks like another module's variable. You'll need to rewrite this call
+// // to ensure that it uses the correct configuration object.
+// $args['quality'] = '-quality ' . escapeshellarg(variable_get('imagemagick_quality', 75));
+
   $args['previewsize'] = '-resize ' . escapeshellarg("{$width}x{$height}");
   $args['colors'] = '-colorspace RGB';
   $args['flatten'] = '-flatten';
@@ -266,7 +271,7 @@ function islandora_document_create_jpg_derivative($file_uri, $dsid, $width, $hei
     'source' => $source,
     'destination' => $dest,
   );
-  drupal_alter('imagemagick_arguments', $args, $context);
+  \Drupal::moduleHandler()->alter('imagemagick_arguments', $args, $context);
   // To make use of ImageMagick 6's parenthetical command grouping we need to
   // make the $source image the first parameter and $dest the last.
   // See http://www.imagemagick.org/Usage/basics/#cmdline
@@ -321,7 +326,7 @@ function islandora_document_add_datastream($object, $datastream_id, $file_uri) {
     if ($ds->mimetype != $mime_detector->getMimetype($file_uri)) {
       $ds->mimetype = $mime_detector->getMimetype($file_uri);
     }
-    $ds->setContentFromFile(drupal_realpath($file_uri), FALSE);
+    $ds->setContentFromFile(\Drupal::service("file_system")->realpath($file_uri), FALSE);
     if ($ingest) {
       $object->ingestDatastream($ds);
     }
@@ -380,8 +385,8 @@ function islandora_document_add_pdf_derivative(AbstractObject $object, $force = 
 
     $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object);
     $dsid = "PDF";
-    $from = drupal_realpath($file_uri);
-    $derivative_file_uri = drupal_realpath(file_create_filename('pdffile.pdf', 'temporary://'));
+    $from = \Drupal::service("file_system")->realpath($file_uri);
+    $derivative_file_uri = \Drupal::service("file_system")->realpath(file_create_filename('pdffile.pdf', 'temporary://'));
     if ($object['OBJ']->mimetype == 'application/pdf') {
       $success = islandora_document_add_datastream($object, $dsid, $from);
       file_unmanaged_delete($file_uri);
