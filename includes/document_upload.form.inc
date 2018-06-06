@@ -22,47 +22,47 @@ function islandora_document_document_upload_form(array $form, array &$form_state
 
   $pdf = islandora_jodconverter_get_format('pdf');
   $pdf['from'][] = 'pdf';
-  $extensions = array(implode(' ', $pdf['from']));
+  $extensions = [implode(' ', $pdf['from'])];
 
-  $form = array();
-  $form['file'] = array(
+  $form = [];
+  $form['file'] = [
     '#title' => t('Document File'),
     '#type' => 'managed_file',
     '#required' => TRUE,
-    '#description' => t('Select file to upload.<br/>Files must be less than <strong>@size MB.</strong><br/>Allowed file types: <strong>@ext.</strong>', array('@size' => $upload_size, '@ext' => $extensions[0])),
+    '#description' => t('Select file to upload.<br/>Files must be less than <strong>@size MB.</strong><br/>Allowed file types: <strong>@ext.</strong>', ['@size' => $upload_size, '@ext' => $extensions[0]]),
     '#default_value' => isset($form_state['values']['files']) ? $form_state['values']['files'] : NULL,
     '#upload_location' => 'temporary://',
-    '#upload_validators' => array(
+    '#upload_validators' => [
       'file_validate_extensions' => $extensions,
       // Assume it's specified in MB.
-      'file_validate_size' => array($upload_size * 1024 * 1024),
-    ),
-  );
+      'file_validate_size' => [$upload_size * 1024 * 1024],
+    ],
+  ];
 
   if (\Drupal::config('islandora_document.settings')->get('islandora_document_allow_text_upload')) {
-    $form['islandora_document_text_upload'] = array(
+    $form['islandora_document_text_upload'] = [
       '#type' => 'checkbox',
       '#title' => t("Add text file to this upload?"),
       '#default_value' => FALSE,
-    );
-    $form['text'] = array(
+    ];
+    $form['text'] = [
       '#title' => t('Document text'),
       '#type' => 'managed_file',
       '#required' => FALSE,
-      '#description' => t('Select text file to upload.<br/>Files must be less than <strong>@size MB.</strong><br/>Allowed file types: <strong>@ext.</strong><br />This file is optional.', array('@size' => $upload_size, '@ext' => 'txt')),
+      '#description' => t('Select text file to upload.<br/>Files must be less than <strong>@size MB.</strong><br/>Allowed file types: <strong>@ext.</strong><br />This file is optional.', ['@size' => $upload_size, '@ext' => 'txt']),
       '#default_value' => isset($form_state['values']['files']) ? $form_state['values']['files'] : NULL,
       '#upload_location' => 'temporary://',
-      '#upload_validators' => array(
-        'file_validate_extensions' => array('txt'),
+      '#upload_validators' => [
+        'file_validate_extensions' => ['txt'],
         // Assume it's specified in MB.
-        'file_validate_size' => array($upload_size * 1024 * 1024),
-      ),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="islandora_document_text_upload"]' => array('checked' => TRUE),
-        ),
-      ),
-    );
+        'file_validate_size' => [$upload_size * 1024 * 1024],
+      ],
+      '#states' => [
+        'visible' => [
+          ':input[name="islandora_document_text_upload"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
   }
   return $form;
 }

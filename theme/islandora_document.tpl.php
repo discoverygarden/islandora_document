@@ -2,7 +2,7 @@
 
 /**
  * @file
- * This is the template file for the pdf object
+ * This is the template file for the pdf object.
  *
  * @TODO: Add documentation about this file and the available variables
  */
@@ -26,10 +26,9 @@
         <h2><?php print t('In collections'); ?></h2>
         <ul>
           <?php foreach ($parent_collections as $collection): ?>
-            <li><?php // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// print l($collection->label, "islandora/object/{$collection->id}");
- ?></li>
+            <li>
+              <a href="{{ path('islandora.view_object', {'object' : collection.id}) }}">{{ collection.label }}</a>
+            </li>
           <?php endforeach; ?>
         </ul>
       </div>

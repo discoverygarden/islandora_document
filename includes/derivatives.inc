@@ -5,6 +5,11 @@
  * Contains all the functions required for adding derivatives for the PDF SP.
  */
 
+use Drupal\Core\Logger\RfcLogLevel;
+use Drupal\imagemagick\ImagemagickExecArguments;
+
+use Drupal\islandora\MimeDetect;
+
 /**
  * Gets the source of all derivatives as an unmanaged file.
  *
@@ -80,22 +85,22 @@ function islandora_document_add_fulltext_derivative(AbstractObject $object, $for
     $success = ($return_code === 0);
 
     if (!$success) {
-      $success = array(
+      $success = [
         'success' => FALSE,
-        'messages' => array(
-          array(
+        'messages' => [
+          [
             'message' => t('`%command` returned an error when creating %dsid derivative of PID %pid: %error'),
-            'message_sub' => array(
+            'message_sub' => [
               '%command' => $command,
               '%dsid' => $dsid,
               '%pid' => $object->id,
               '%error' => implode("\n", $exec_out),
-            ),
+            ],
             'type' => 'dsm',
-            'severity' => WATCHDOG_ERROR,
-          ),
-        ),
-      );
+            'severity' => RfcLogLevel::ERROR,
+          ],
+        ],
+      ];
     }
     else {
       // Before we add this datastream let's rip out non valid XML characters.
@@ -104,31 +109,31 @@ function islandora_document_add_fulltext_derivative(AbstractObject $object, $for
       file_put_contents($derivative_file_uri, $sanitized_full_text);
       $success = islandora_document_add_datastream($object, $dsid, $derivative_file_uri);
       if ($success === TRUE) {
-        return array(
+        return [
           'success' => TRUE,
-          'messages' => array(
-            array(
+          'messages' => [
+            [
               'message' => t('Created FULL_TEXT derivative.'),
               'type' => 'dsm',
-            ),
-          ),
-        );
+            ],
+          ],
+        ];
       }
       else {
-        return array(
+        return [
           'success' => FALSE,
-          'messages' => array(
-            array(
+          'messages' => [
+            [
               'message' => t('Failed to create FULL_TEXT derivative for @pid. Error message: @error'),
-              'message_sub' => array(
+              'message_sub' => [
                 '@pid' => $object->id,
                 '@error' => $success,
-              ),
+              ],
               'type' => 'watchdog',
-              'severity' => WATCHDOG_ERROR,
-            ),
-          ),
-        );
+              'severity' => RfcLogLevel::ERROR,
+            ],
+          ],
+        ];
       }
     }
     file_unmanaged_delete($temp);
@@ -197,36 +202,36 @@ function islandora_document_add_jpg_derivative(AbstractObject $object, $file_uri
       $success = islandora_document_add_datastream($object, $dsid, $derivative_file_uri);
       file_unmanaged_delete($derivative_file_uri);
       if ($success === TRUE) {
-        return array(
+        return [
           'success' => TRUE,
-          'messages' => array(
-            array(
+          'messages' => [
+            [
               'message' => t('Created JPG derivative for @dsid (@pid).'),
-              'message_sub' => array(
+              'message_sub' => [
                 '@dsid' => $dsid,
                 '@pid' => $object->id,
-              ),
+              ],
               'type' => 'dsm',
-            ),
-          ),
-        );
+            ],
+          ],
+        ];
       }
       else {
-        return array(
+        return [
           'success' => FALSE,
-          'messages' => array(
-            array(
+          'messages' => [
+            [
               'message' => t('Failed to create JPG derivative for @dsid (@pid). Error message: @message'),
-              'message_sub' => array(
+              'message_sub' => [
                 '@dsid' => $dsid,
                 '@pid' => $object->id,
                 '@message' => $success,
-              ),
+              ],
               'type' => 'watchdog',
-              'severity' => WATCHDOG_ERROR,
-            ),
-          ),
-        );
+              'severity' => RfcLogLevel::ERROR,
+            ],
+          ],
+        ];
       }
     }
     else {
@@ -258,42 +263,36 @@ function islandora_document_create_jpg_derivative($file_uri, $dsid, $width, $hei
   $base = pathinfo($source, PATHINFO_FILENAME);
   $temp = file_create_filename("$base.$dsid.jpg", 'temporary://');
   $dest = \Drupal::service("file_system")->realpath($temp);
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// $args['quality'] = '-quality ' . escapeshellarg(variable_get('imagemagick_quality', 75));
+  $exec_manager = \Drupal::service('imagemagick.exec_manager');
 
-  $args['previewsize'] = '-resize ' . escapeshellarg("{$width}x{$height}");
-  $args['colors'] = '-colorspace RGB';
-  $args['flatten'] = '-flatten';
-  $context = array(
-    'source' => $source,
-    'destination' => $dest,
-  );
-  \Drupal::moduleHandler()->alter('imagemagick_arguments', $args, $context);
-  // To make use of ImageMagick 6's parenthetical command grouping we need to
-  // make the $source image the first parameter and $dest the last.
-  // See http://www.imagemagick.org/Usage/basics/#cmdline
-  $command = escapeshellarg($source) . ' ' . implode(' ', $args) . ' ' . escapeshellarg("jpg:$dest");
+  $args = new ImagemagickExecArguments($exec_manager);
+  $args->setSourceLocalPath($source);
+  $args->setDestinationLocalPath($dest);
+  $args->setSourceFrames('[0]');
+  $args->addArgument('-resize ' . $args->escapeShellArg("{$width}x{$height}"));
+  $args->addArgument('-colorspace RGB');
+  $args->addArgument('-flatten');
+
+  $command = 'convert';
+  \Drupal::moduleHandler()->alter('imagemagick_arguments', $args, $command);
   $output = '';
   $ret = -1;
-  if (_imagemagick_convert_exec($command, $output, $ret) !== TRUE) {
-    return array(
+  if ($exec_manager->execute($command, $args, $output, $ret) !== TRUE) {
+    return [
       'success' => FALSE,
-      'messages' => array(
-        array(
+      'messages' => [
+        [
           'message' => t('ImageMagick failed to create derivatives for @pid<br/>Error: @ret<br/>Command: @command<br/>Output: @output'),
-          'message_sub' => array(
+          'message_sub' => [
             '@ret' => $ret,
             '@command' => $command,
             '@output' => $output,
-          ),
+          ],
           'type' => 'watchdog',
-          'severity' => WATCHDOG_ERROR,
-        ),
-      ),
-    );
+          'severity' => RfcLogLevel::ERROR,
+        ],
+      ],
+    ];
   }
   return $temp;
 }
@@ -311,7 +310,7 @@ function islandora_document_create_jpg_derivative($file_uri, $dsid, $width, $hei
  * @return bool|string
  *   TRUE if successfully added/modified the datastream, error message if not.
  */
-function islandora_document_add_datastream($object, $datastream_id, $file_uri) {
+function islandora_document_add_datastream(AbstractObject $object, $datastream_id, $file_uri) {
   $return = TRUE;
   try {
     $ingest = !isset($object[$datastream_id]);
@@ -350,17 +349,17 @@ function islandora_document_add_datastream($object, $datastream_id, $file_uri) {
  * @see hook_islandora_derivative()
  */
 function islandora_document_no_obj_datastream($pid) {
-  return array(
+  return [
     'success' => FALSE,
-    'messages' => array(
-      array(
+    'messages' => [
+      [
         'message' => t('Could not create derivatives for %s. No file was uploaded.'),
-        'message_sub' => array('%s' => $pid),
+        'message_sub' => ['%s' => $pid],
         'type' => 'watchdog',
-        'severity' => WATCHDOG_ERROR,
-      ),
-    ),
-  );
+        'severity' => RfcLogLevel::ERROR,
+      ],
+    ],
+  ];
 }
 
 /**
@@ -402,40 +401,40 @@ function islandora_document_add_pdf_derivative(AbstractObject $object, $force = 
       }
     }
     if ($success === TRUE) {
-      return array(
+      return [
         'success' => TRUE,
-        'messages' => array(
-          array(
+        'messages' => [
+          [
             'message' => t('Created PDF derivative.'),
             'type' => 'dsm',
-          ),
-        ),
-      );
+          ],
+        ],
+      ];
     }
     else {
-      return array(
+      return [
         'success' => FALSE,
-        'messages' => array(
-          array(
+        'messages' => [
+          [
             'message' => t('Failed to create PDF derivative for @pid. Error message: @error'),
-            'message_sub' => array(
+            'message_sub' => [
               '@pid' => $object->id,
               '@error' => $success,
-            ),
+            ],
             'type' => 'watchdog',
-            'severity' => WATCHDOG_ERROR,
-          ),
-        ),
-      );
+            'severity' => RfcLogLevel::ERROR,
+          ],
+        ],
+      ];
     }
   }
-  return array(
+  return [
     'success' => TRUE,
-    'messages' => array(
-      array(
+    'messages' => [
+      [
         'message' => t('PDF derivative for @pid already exists.'),
         'type' => 'dsm',
-      ),
-    ),
-  );
+      ],
+    ],
+  ];
 }

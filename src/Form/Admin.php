@@ -2,15 +2,39 @@
 
 namespace Drupal\islandora_document\Form;
 
-use Drupal\Core\Form\ConfigFormBase;
+use Drupal\islandora\Form\ModuleHandlerAdminForm;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Link;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Link;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Module settings form.
+ * Module administration form.
  */
-class Admin extends ConfigFormBase {
+class Admin extends ModuleHandlerAdminForm {
+  /**
+   * Renderer instance.
+   *
+   * @var Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(RendererInterface $renderer) {
+    $this->renderer = $renderer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('renderer')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -62,16 +86,16 @@ class Admin extends ConfigFormBase {
       '#theme' => 'image',
       '#uri' => Url::fromUri('base:core/misc/icons/73b355/check.svg')->toString(),
     ];
-    $confirmation_message = \Drupal::service('renderer')->render($image);
-    $confirmation_message .= $this->t('pdftotext executable found at @url', ['@url' => $islandora_document_path_to_pdftotext]);
+    $confirmation_message = $this->renderer->render($image)
+      . $this->t('pdftotext executable found at @url', ['@url' => $islandora_document_path_to_pdftotext]);
 
     if ($return_value != 99) {
       $image = [
         '#theme' => 'image',
         '#uri' => Url::fromUri('base:core/misc/icons/e32700/error.svg')->toString(),
       ];
-      $confirmation_message = \Drupal::service('renderer')->render($image);
-      $confirmation_message .= $this->t('Unable to find pdftotext executable at @url', ['@url' => $islandora_document_path_to_pdftotext]);
+      $confirmation_message = $this->renderer->render($image)
+        . $this->t('Unable to find pdftotext executable at @url', ['@url' => $islandora_document_path_to_pdftotext]);
     }
     // @Todo: add a configuration to choose which Derivatives to build by call the
     // jodconverter's get format function.
