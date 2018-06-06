@@ -133,9 +133,7 @@ function islandora_document_islandora_sp_document_islandora_ingest_steps() {
     'islandora_document_file_upload' => [
       'weight' => 10,
       'type' => 'form',
-      'form_id' => 'islandora_document_document_upload_form',
-      'module' => 'islandora_document',
-      'file' => 'includes/document_upload.form.inc',
+      'form_class' => 'Drupal\islandora_document\Form\DocumentUpload',
     ],
   ];
 }

@@ -258,7 +258,7 @@ function islandora_document_add_jpg_derivative(AbstractObject $object, $file_uri
  * @see hook_islandora_derivative()
  */
 function islandora_document_create_jpg_derivative($file_uri, $dsid, $width, $height) {
-  $source = \Drupal::service("file_system")->realpath($file_uri) . '[0]';
+  $source = \Drupal::service("file_system")->realpath($file_uri);
   // Get the base name of the source file.
   $base = pathinfo($source, PATHINFO_FILENAME);
   $temp = file_create_filename("$base.$dsid.jpg", 'temporary://');

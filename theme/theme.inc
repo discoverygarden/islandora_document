@@ -55,13 +55,13 @@ function template_preprocess_islandora_document(array &$variables) {
   else {
     // Full size url.
     if (isset($islandora_object['PDF'])) {
-      $full_size_url = Url::fromRoute("islandora/object/{$islandora_object->id}/datastream/PDF/view", ['absolute' => TRUE]);
+      $full_size_url = Url::fromRoute('islandora.view_datastream_view', ['object' => $islandora_object->id, 'datastream' => 'PDF'], ['absolute' => TRUE]);
 
       $variables['islandora_full_url'] = $full_size_url->toString();
     }
     // Thumbnail.
     if (isset($islandora_object['TN'])) {
-      $thumbnail_size_url = Url::fromRoute("islandora/object/{$islandora_object->id}/datastream/TN/view");
+      $thumbnail_size_url = Url::fromRoute('islandora.view_datastream_view', ['object' => $islandora_object->id, 'datastream' => 'TN']);
 
       $params = [
         '#title' => $islandora_object->label,
@@ -73,7 +73,7 @@ function template_preprocess_islandora_document(array &$variables) {
     }
     // Preview image + link.
     if (isset($islandora_object['PREVIEW'])) {
-      $preview_url = Url::fromRoute("islandora/object/{$islandora_object->id}/datastream/PREVIEW/view");
+      $preview_url = Url::fromRoute('islandora.view_datastream_view', ['object' => $islandora_object->id, 'datastream' => 'PREVIEW']);
 
       $params = [
         '#title' => $islandora_object->label,
@@ -84,8 +84,13 @@ function template_preprocess_islandora_document(array &$variables) {
 
       $variables['islandora_content'] = Link::fromTextAndUrl($variables['islandora_preview_img'], $full_size_url);
 
-      // Sanitize this object name a bit.
-      $download_url = Url::fromRoute("islandora/object/{$islandora_object->id}/datastream/OBJ/download/{$islandora_object->label}");
+      // Sanitize this object name a bit and provide download link.
+      $sanitized_label = preg_replace('/[^A-Za-z0-9_\-]|\.pdf$/', '_', $islandora_object->label);
+      $download_url = Url::fromRoute('islandora.download_datastream', [
+        'object' => $islandora_object->id,
+        'datastream' => 'OBJ',
+        'filename' => "{$sanitized_label}.pdf",
+      ], ['attributes' => ['class' => ['islandora-pdf-link']]]);
       $download_text = t("Download document");
       $variables['islandora_download_link'] = Link::fromTextAndUrl($download_text, $download_url)->toString();
     }
