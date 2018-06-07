@@ -1,38 +1,37 @@
-<?php
-
+{#
 /**
  * @file
  * This is the template file for the pdf object.
  *
  * @TODO: Add documentation about this file and the available variables
  */
-?>
+#}
 
 <div class="islandora-pdf-object islandora" vocab="http://schema.org/" prefix="dcterms: http://purl.org/dc/terms/" typeof="Article">
   <div class="islandora-pdf-content-wrapper clearfix">
-    <?php if (isset($islandora_content)): ?>
+    {% if islandora_content is defined %}
       <div class="islandora-pdf-content">
-        <?php print $islandora_content; ?>
+        {{ islandora_content }}
       </div>
-      <?php if (isset($islandora_download_link)): ?>
-        <?php print $islandora_download_link; ?>
-      <?php endif; ?>
-    <?php endif; ?>
+      {% if islandora_download_link is defined %}
+        {{ islandora_download_link }}
+      {% endif %}
+    {% endif %}
   </div>
   <div class="islandora-pdf-metadata">
-    <?php print $description; ?>
-    <?php if($parent_collections): ?>
+    {{ description }}
+    {% if parent_collections %}
       <div>
-        <h2><?php print t('In collections'); ?></h2>
+        <h2>{{ 'In collections'|t }}</h2>
         <ul>
-          <?php foreach ($parent_collections as $collection): ?>
+          {% for collection in parent_collections %}
             <li>
               <a href="{{ path('islandora.view_object', {'object' : collection.id}) }}">{{ collection.label }}</a>
             </li>
-          <?php endforeach; ?>
+          {% endfor %}
         </ul>
       </div>
-    <?php endif; ?>
-    <?php print $metadata; ?>
+    {% endif %}
+    {{ metadata }}
   </div>
 </div>
