@@ -137,6 +137,7 @@ class Admin extends ModuleHandlerAdminForm {
         'wrapper' => 'islandora-url',
         'effect' => 'fade',
         'event' => 'blur',
+        'disable-refocus' => TRUE,
         'progress' => ['type' => 'throbber'],
       ],
       '#states' => [
@@ -190,6 +191,19 @@ class Admin extends ModuleHandlerAdminForm {
       '#value' => $this->t('Submit'),
     ];
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    if (FALSE !== $form_state->getValue('islandora_document_create_fulltext')) {
+      $islandora_document_path_to_pdftotext = $form_state->getValue('islandora_document_path_to_pdftotext');
+      exec($islandora_document_path_to_pdftotext, $output, $return_value);
+      if ($return_value != 99) {
+        return $form_state->setError($form['islandora_document_url_fieldset']['wrapper']['islandora_document_path_to_pdftotext'], $this->t('Cannot extract text from PDF without a valid path to pdftotext.'));
+      }
+    }
   }
 
 }
