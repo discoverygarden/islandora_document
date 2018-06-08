@@ -191,7 +191,6 @@ function islandora_document_add_jpg_derivative(AbstractObject $object, $file_uri
     }
     if (isset($object['PDF']) && $object['PDF']->size != -1) {
       $derivative_file_uri = islandora_document_create_jpg_derivative($file_uri, $dsid, $width, $height);
-      file_unmanaged_delete($file_uri);
     }
     else {
       $derivative_file_uri = drupal_get_path('module', 'islandora_document') . "/images/folder.png";
@@ -200,7 +199,6 @@ function islandora_document_add_jpg_derivative(AbstractObject $object, $file_uri
     // Receive a valid file URI to add or an error message otherwise.
     if (!is_array($derivative_file_uri) && file_valid_uri($derivative_file_uri)) {
       $success = islandora_document_add_datastream($object, $dsid, $derivative_file_uri);
-      file_unmanaged_delete($derivative_file_uri);
       if ($success === TRUE) {
         return [
           'success' => TRUE,
