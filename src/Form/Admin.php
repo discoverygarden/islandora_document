@@ -197,7 +197,8 @@ class Admin extends ModuleHandlerAdminForm {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    if (FALSE !== $form_state->getValue('islandora_document_create_fulltext')) {
+    // Checkboxes are 1 when checked, 0 when not checked.
+    if (1 == $form_state->getValue('islandora_document_create_fulltext')) {
       $islandora_document_path_to_pdftotext = $form_state->getValue('islandora_document_path_to_pdftotext');
       exec($islandora_document_path_to_pdftotext, $output, $return_value);
       if ($return_value != 99) {
