@@ -67,9 +67,15 @@ class DocumentUpload extends FormBase {
       $form['islandora_document_text_upload'] = [
         '#type' => 'checkbox',
         '#title' => $this->t("Add text file to this upload?"),
-        '#default_value' => FALSE,
       ];
-      $form['text'] = [
+      // Wrapper work-around for a Drupal bug affecting visible state.
+      $form['text_section'] = [
+        '#type' => 'item',
+        '#states' => [
+          'visible' => ['#edit-islandora-document-text-upload' => ['checked' => TRUE]],
+        ],
+      ];
+      $form['text_section']['text'] = [
         '#title' => $this->t('Document text'),
         '#type' => 'managed_file',
         '#required' => FALSE,
@@ -80,11 +86,6 @@ class DocumentUpload extends FormBase {
           'file_validate_extensions' => ['txt'],
           // Assume it's specified in MB.
           'file_validate_size' => [$upload_size * 1024 * 1024],
-        ],
-        '#states' => [
-          'visible' => [
-            ':input[name="islandora_document_text_upload"]' => ['checked' => TRUE],
-          ],
         ],
       ];
     }
