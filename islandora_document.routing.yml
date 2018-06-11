@@ -1,0 +1,7 @@
+islandora_document.admin:
+  path: 'admin/config/islandora/solution_pack_config/document'
+  defaults:
+    _title: 'Document Solution Pack'
+    _form: '\Drupal\islandora_document\Form\Admin'
+  requirements:
+    _permission: 'administer site configuration'

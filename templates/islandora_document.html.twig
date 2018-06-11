@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ * This is the template file for the pdf object.
+ *
+ * @TODO: Add documentation about this file and the available variables
+ */
+#}
+
+<div class="islandora-pdf-object islandora" vocab="http://schema.org/" prefix="dcterms: http://purl.org/dc/terms/" typeof="Article">
+  <div class="islandora-pdf-content-wrapper clearfix">
+    {% if islandora_content is defined %}
+      <div class="islandora-pdf-content">
+        {{ islandora_content }}
+      </div>
+      {% if islandora_download_link is defined %}
+        {{ islandora_download_link }}
+      {% endif %}
+    {% endif %}
+  </div>
+  <div class="islandora-pdf-metadata">
+    {{ description }}
+    {% if parent_collections %}
+      <div>
+        <h2>{{ 'In collections'|t }}</h2>
+        <ul>
+          {% for collection in parent_collections %}
+            <li>
+              <a href="{{ path('islandora.view_object', {'object' : collection.id}) }}">{{ collection.label }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    {{ metadata }}
+  </div>
+</div>

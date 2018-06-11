@@ -1,0 +1,12 @@
+name: 'Islandora Document'
+description: 'A default Islandora Repository module to handle documents'
+dependencies:
+  - :islandora
+  - file
+  - imagemagick:imagemagick
+  - :islandora_jodconverter
+package: 'Islandora Solution Packs'
+configure: islandora_document.admin
+core: 8.x
+type: module
+php: '5.5.9'

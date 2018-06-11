@@ -5,6 +5,11 @@
  * Contains all the functions required for adding derivatives for the PDF SP.
  */
 
+use Drupal\Core\Logger\RfcLogLevel;
+use Drupal\imagemagick\ImagemagickExecArguments;
+
+use Drupal\islandora\MimeDetect;
+
 /**
  * Gets the source of all derivatives as an unmanaged file.
  *
@@ -41,8 +46,8 @@ function islandora_document_get_derivative_source_as_unmanaged_file(AbstractObje
  * @see hook_islandora_derivative()
  */
 function islandora_document_add_tn_derivative(AbstractObject $object, $force = FALSE) {
-  $width = variable_get('islandora_document_thumbnail_width', 200);
-  $height = variable_get('islandora_document_thumbnail_height', 200);
+  $width = \Drupal::config('islandora_document.settings')->get('islandora_document_thumbnail_width');
+  $height = \Drupal::config('islandora_document.settings')->get('islandora_document_thumbnail_height');
   $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object, 'PDF');
   $results = islandora_document_add_jpg_derivative($object, $file_uri, 'TN', $width, $height, $force);
   file_unmanaged_delete($file_uri);
@@ -70,32 +75,32 @@ function islandora_document_add_fulltext_derivative(AbstractObject $object, $for
     }
     $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object, 'PDF');
     $dsid = "FULL_TEXT";
-    $source = $source = drupal_realpath($file_uri);
-    $executable = variable_get('islandora_document_path_to_pdftotext', '/usr/bin/pdftotext');
+    $source = $source = \Drupal::service("file_system")->realpath($file_uri);
+    $executable = \Drupal::config('islandora_document.settings')->get('islandora_document_path_to_pdftotext');
     $temp = file_create_filename('fulltext.txt', 'temporary://');
-    $derivative_file_uri = drupal_realpath($temp);
+    $derivative_file_uri = \Drupal::service("file_system")->realpath($temp);
     $command = "$executable $source $derivative_file_uri";
     exec($command, $exec_out, $return_code);
     file_unmanaged_delete($file_uri);
     $success = ($return_code === 0);
 
     if (!$success) {
-      $success = array(
+      $success = [
         'success' => FALSE,
-        'messages' => array(
-          array(
+        'messages' => [
+          [
             'message' => t('`%command` returned an error when creating %dsid derivative of PID %pid: %error'),
-            'message_sub' => array(
+            'message_sub' => [
               '%command' => $command,
               '%dsid' => $dsid,
               '%pid' => $object->id,
               '%error' => implode("\n", $exec_out),
-            ),
+            ],
             'type' => 'dsm',
-            'severity' => WATCHDOG_ERROR,
-          ),
-        ),
-      );
+            'severity' => RfcLogLevel::ERROR,
+          ],
+        ],
+      ];
     }
     else {
       // Before we add this datastream let's rip out non valid XML characters.
@@ -104,31 +109,31 @@ function islandora_document_add_fulltext_derivative(AbstractObject $object, $for
       file_put_contents($derivative_file_uri, $sanitized_full_text);
       $success = islandora_document_add_datastream($object, $dsid, $derivative_file_uri);
       if ($success === TRUE) {
-        return array(
+        return [
           'success' => TRUE,
-          'messages' => array(
-            array(
+          'messages' => [
+            [
               'message' => t('Created FULL_TEXT derivative.'),
               'type' => 'dsm',
-            ),
-          ),
-        );
+            ],
+          ],
+        ];
       }
       else {
-        return array(
+        return [
           'success' => FALSE,
-          'messages' => array(
-            array(
+          'messages' => [
+            [
               'message' => t('Failed to create FULL_TEXT derivative for @pid. Error message: @error'),
-              'message_sub' => array(
+              'message_sub' => [
                 '@pid' => $object->id,
                 '@error' => $success,
-              ),
+              ],
               'type' => 'watchdog',
-              'severity' => WATCHDOG_ERROR,
-            ),
-          ),
-        );
+              'severity' => RfcLogLevel::ERROR,
+            ],
+          ],
+        ];
       }
     }
     file_unmanaged_delete($temp);
@@ -150,8 +155,8 @@ function islandora_document_add_fulltext_derivative(AbstractObject $object, $for
  * @see hook_islandora_derivative()
  */
 function islandora_document_add_preview_derivative(AbstractObject $object, $force = FALSE) {
-  $width = variable_get('islandora_document_preview_width', 500);
-  $height = variable_get('islandora_document_preview_height', 700);
+  $width = \Drupal::config('islandora_document.settings')->get('islandora_document_preview_width');
+  $height = \Drupal::config('islandora_document.settings')->get('islandora_document_preview_height');
   $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object, 'PDF');
   $results = islandora_document_add_jpg_derivative($object, $file_uri, 'PREVIEW', $width, $height, $force);
   file_unmanaged_delete($file_uri);
@@ -186,7 +191,6 @@ function islandora_document_add_jpg_derivative(AbstractObject $object, $file_uri
     }
     if (isset($object['PDF']) && $object['PDF']->size != -1) {
       $derivative_file_uri = islandora_document_create_jpg_derivative($file_uri, $dsid, $width, $height);
-      file_unmanaged_delete($file_uri);
     }
     else {
       $derivative_file_uri = drupal_get_path('module', 'islandora_document') . "/images/folder.png";
@@ -195,38 +199,37 @@ function islandora_document_add_jpg_derivative(AbstractObject $object, $file_uri
     // Receive a valid file URI to add or an error message otherwise.
     if (!is_array($derivative_file_uri) && file_valid_uri($derivative_file_uri)) {
       $success = islandora_document_add_datastream($object, $dsid, $derivative_file_uri);
-      file_unmanaged_delete($derivative_file_uri);
       if ($success === TRUE) {
-        return array(
+        return [
           'success' => TRUE,
-          'messages' => array(
-            array(
+          'messages' => [
+            [
               'message' => t('Created JPG derivative for @dsid (@pid).'),
-              'message_sub' => array(
+              'message_sub' => [
                 '@dsid' => $dsid,
                 '@pid' => $object->id,
-              ),
+              ],
               'type' => 'dsm',
-            ),
-          ),
-        );
+            ],
+          ],
+        ];
       }
       else {
-        return array(
+        return [
           'success' => FALSE,
-          'messages' => array(
-            array(
+          'messages' => [
+            [
               'message' => t('Failed to create JPG derivative for @dsid (@pid). Error message: @message'),
-              'message_sub' => array(
+              'message_sub' => [
                 '@dsid' => $dsid,
                 '@pid' => $object->id,
                 '@message' => $success,
-              ),
+              ],
               'type' => 'watchdog',
-              'severity' => WATCHDOG_ERROR,
-            ),
-          ),
-        );
+              'severity' => RfcLogLevel::ERROR,
+            ],
+          ],
+        ];
       }
     }
     else {
@@ -253,42 +256,41 @@ function islandora_document_add_jpg_derivative(AbstractObject $object, $file_uri
  * @see hook_islandora_derivative()
  */
 function islandora_document_create_jpg_derivative($file_uri, $dsid, $width, $height) {
-  $source = drupal_realpath($file_uri) . '[0]';
+  $source = \Drupal::service("file_system")->realpath($file_uri);
   // Get the base name of the source file.
   $base = pathinfo($source, PATHINFO_FILENAME);
   $temp = file_create_filename("$base.$dsid.jpg", 'temporary://');
-  $dest = drupal_realpath($temp);
-  $args['quality'] = '-quality ' . escapeshellarg(variable_get('imagemagick_quality', 75));
-  $args['previewsize'] = '-resize ' . escapeshellarg("{$width}x{$height}");
-  $args['colors'] = '-colorspace RGB';
-  $args['flatten'] = '-flatten';
-  $context = array(
-    'source' => $source,
-    'destination' => $dest,
-  );
-  drupal_alter('imagemagick_arguments', $args, $context);
-  // To make use of ImageMagick 6's parenthetical command grouping we need to
-  // make the $source image the first parameter and $dest the last.
-  // See http://www.imagemagick.org/Usage/basics/#cmdline
-  $command = escapeshellarg($source) . ' ' . implode(' ', $args) . ' ' . escapeshellarg("jpg:$dest");
+  $dest = \Drupal::service("file_system")->realpath($temp);
+  $exec_manager = \Drupal::service('imagemagick.exec_manager');
+
+  $args = new ImagemagickExecArguments($exec_manager);
+  $args->setSourceLocalPath($source);
+  $args->setDestinationLocalPath($dest);
+  $args->setSourceFrames('[0]');
+  $args->addArgument('-resize ' . $args->escapeShellArg("{$width}x{$height}"));
+  $args->addArgument('-colorspace RGB');
+  $args->addArgument('-flatten');
+
+  $command = 'convert';
+  \Drupal::moduleHandler()->alter('imagemagick_arguments', $args, $command);
   $output = '';
   $ret = -1;
-  if (_imagemagick_convert_exec($command, $output, $ret) !== TRUE) {
-    return array(
+  if ($exec_manager->execute($command, $args, $output, $ret) !== TRUE) {
+    return [
       'success' => FALSE,
-      'messages' => array(
-        array(
+      'messages' => [
+        [
           'message' => t('ImageMagick failed to create derivatives for @pid<br/>Error: @ret<br/>Command: @command<br/>Output: @output'),
-          'message_sub' => array(
+          'message_sub' => [
             '@ret' => $ret,
             '@command' => $command,
             '@output' => $output,
-          ),
+          ],
           'type' => 'watchdog',
-          'severity' => WATCHDOG_ERROR,
-        ),
-      ),
-    );
+          'severity' => RfcLogLevel::ERROR,
+        ],
+      ],
+    ];
   }
   return $temp;
 }
@@ -306,7 +308,7 @@ function islandora_document_create_jpg_derivative($file_uri, $dsid, $width, $hei
  * @return bool|string
  *   TRUE if successfully added/modified the datastream, error message if not.
  */
-function islandora_document_add_datastream($object, $datastream_id, $file_uri) {
+function islandora_document_add_datastream(AbstractObject $object, $datastream_id, $file_uri) {
   $return = TRUE;
   try {
     $ingest = !isset($object[$datastream_id]);
@@ -321,7 +323,7 @@ function islandora_document_add_datastream($object, $datastream_id, $file_uri) {
     if ($ds->mimetype != $mime_detector->getMimetype($file_uri)) {
       $ds->mimetype = $mime_detector->getMimetype($file_uri);
     }
-    $ds->setContentFromFile(drupal_realpath($file_uri), FALSE);
+    $ds->setContentFromFile(\Drupal::service("file_system")->realpath($file_uri), FALSE);
     if ($ingest) {
       $object->ingestDatastream($ds);
     }
@@ -345,17 +347,17 @@ function islandora_document_add_datastream($object, $datastream_id, $file_uri) {
  * @see hook_islandora_derivative()
  */
 function islandora_document_no_obj_datastream($pid) {
-  return array(
+  return [
     'success' => FALSE,
-    'messages' => array(
-      array(
+    'messages' => [
+      [
         'message' => t('Could not create derivatives for %s. No file was uploaded.'),
-        'message_sub' => array('%s' => $pid),
+        'message_sub' => ['%s' => $pid],
         'type' => 'watchdog',
-        'severity' => WATCHDOG_ERROR,
-      ),
-    ),
-  );
+        'severity' => RfcLogLevel::ERROR,
+      ],
+    ],
+  ];
 }
 
 /**
@@ -380,11 +382,10 @@ function islandora_document_add_pdf_derivative(AbstractObject $object, $force = 
 
     $file_uri = islandora_document_get_derivative_source_as_unmanaged_file($object);
     $dsid = "PDF";
-    $from = drupal_realpath($file_uri);
-    $derivative_file_uri = drupal_realpath(file_create_filename('pdffile.pdf', 'temporary://'));
+    $from = \Drupal::service("file_system")->realpath($file_uri);
+    $derivative_file_uri = \Drupal::service("file_system")->realpath(file_create_filename('pdffile.pdf', 'temporary://'));
     if ($object['OBJ']->mimetype == 'application/pdf') {
       $success = islandora_document_add_datastream($object, $dsid, $from);
-      file_unmanaged_delete($file_uri);
     }
     else {
       $success = islandora_jodconverter_convert($from, $derivative_file_uri);
@@ -397,40 +398,40 @@ function islandora_document_add_pdf_derivative(AbstractObject $object, $force = 
       }
     }
     if ($success === TRUE) {
-      return array(
+      return [
         'success' => TRUE,
-        'messages' => array(
-          array(
+        'messages' => [
+          [
             'message' => t('Created PDF derivative.'),
             'type' => 'dsm',
-          ),
-        ),
-      );
+          ],
+        ],
+      ];
     }
     else {
-      return array(
+      return [
         'success' => FALSE,
-        'messages' => array(
-          array(
+        'messages' => [
+          [
             'message' => t('Failed to create PDF derivative for @pid. Error message: @error'),
-            'message_sub' => array(
+            'message_sub' => [
               '@pid' => $object->id,
               '@error' => $success,
-            ),
+            ],
             'type' => 'watchdog',
-            'severity' => WATCHDOG_ERROR,
-          ),
-        ),
-      );
+            'severity' => RfcLogLevel::ERROR,
+          ],
+        ],
+      ];
     }
   }
-  return array(
+  return [
     'success' => TRUE,
-    'messages' => array(
-      array(
+    'messages' => [
+      [
         'message' => t('PDF derivative for @pid already exists.'),
         'type' => 'dsm',
-      ),
-    ),
-  );
+      ],
+    ],
+  ];
 }
