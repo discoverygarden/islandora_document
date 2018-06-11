@@ -386,7 +386,6 @@ function islandora_document_add_pdf_derivative(AbstractObject $object, $force = 
     $derivative_file_uri = \Drupal::service("file_system")->realpath(file_create_filename('pdffile.pdf', 'temporary://'));
     if ($object['OBJ']->mimetype == 'application/pdf') {
       $success = islandora_document_add_datastream($object, $dsid, $from);
-      file_unmanaged_delete($file_uri);
     }
     else {
       $success = islandora_jodconverter_convert($from, $derivative_file_uri);
