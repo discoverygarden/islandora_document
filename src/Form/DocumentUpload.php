@@ -66,7 +66,7 @@ class DocumentUpload extends FormBase {
     if ($this->config('islandora_document.settings')->get('islandora_document_allow_text_upload')) {
       $form['islandora_document_text_upload'] = [
         '#type' => 'checkbox',
-        '#title' => $this->t("Add text file to this upload?"),
+        '#title' => $this->t('Add text file to this upload?'),
       ];
       // Wrapper work-around for a Drupal bug affecting visible state.
       $form['text_section'] = [
@@ -110,7 +110,7 @@ class DocumentUpload extends FormBase {
       $ds->label = $file->getFilename();
       $ds->mimetype = $file->getMimeType();
     }
-    if ($form_state->getValue('text') && $form_state->getValue('text') > 0) {
+    if ($form_state->getValue('islandora_document_text_upload') && $form_state->getValue('text') > 0) {
       if (empty($object['FULL_TEXT'])) {
         $ds = $object->constructDatastream('FULL_TEXT', 'M');
         $object->ingestDatastream($ds);
