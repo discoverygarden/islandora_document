@@ -110,7 +110,7 @@ class DocumentUpload extends FormBase {
       $ds->label = $file->getFilename();
       $ds->mimetype = $file->getMimeType();
     }
-    if ($form_state->getValue('islandora_document_text_upload') && $form_state->getValue('text') && $form_state->getValue('text') > 0) {
+    if ($form_state->getValue('islandora_document_text_upload') && $form_state->getValue('text') > 0) {
       if (empty($object['FULL_TEXT'])) {
         $ds = $object->constructDatastream('FULL_TEXT', 'M');
         $object->ingestDatastream($ds);
