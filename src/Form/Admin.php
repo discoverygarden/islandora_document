@@ -149,7 +149,7 @@ class Admin extends ModuleHandlerAdminForm {
     $form['islandora_document_thumbnail_fieldset'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Thumbnail'),
-      '#description' => $this->t('Settings for creating PDF thumbnail derivatives'),
+      '#description' => $this->t('Settings for creating PDF thumbnail derivatives.'),
     ];
     $form['islandora_document_thumbnail_fieldset']['islandora_document_thumbnail_width'] = [
       '#type' => 'number',
@@ -168,7 +168,7 @@ class Admin extends ModuleHandlerAdminForm {
     $form['islandora_document_preview_fieldset'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Preview image'),
-      '#description' => $this->t('Settings for creating PDF preview image derivatives'),
+      '#description' => $this->t('Settings for creating PDF preview image derivatives.'),
     ];
     $form['islandora_document_preview_fieldset']['islandora_document_preview_width'] = [
       '#type' => 'number',
