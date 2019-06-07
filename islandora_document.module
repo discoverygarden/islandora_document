@@ -167,3 +167,56 @@ function islandora_document_islandora_sp_document_islandora_derivative() {
   }
   return $derivatives;
 }
+
+/**
+ * Implements hook_help().
+ */
+function islandora_document_help($route) {
+  switch ($route) {
+    // Main help page for the module.
+    case 'help.page.islandora_document':
+      // About section.
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t(
+        'The Islandora Document module adds the ability to upload and manage
+        documents in a Document Collection. File types that are considered to be
+        documents include: ODT, SXW, RTF, DOC, DOCX, WPD, TXT, HTML, ODS, SXC,
+        XLS, XLSX, CSV, TSV, ODP, SXI, PPT, PPTX, and PDF. PDF derivatives are
+        created for viewing Document objects.'
+      ) .
+      '</p>';
+      // Uses section.
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dt>' . t('Upload Document Objects') . '</dt><dd>' . t(
+        'In the "Manage" tab of the Document Collection, click "Add an
+        object to this Collection", and follow the ingest form.'
+      ) .
+      '</dd>';
+      $output .= '<dt>' . t('View Document Objects') . '</dt><dd>' . t(
+        'In the "View" tab of the Document Colleciton, click on the thumbnail
+        for your desired object; that will bring you to the
+        preview in the "View" tab of the object. Clicking on the
+        preview will allow you to view the PDF how your browser typically
+        displays PDF files. If the Document is multiple pages, you will have
+        to use the PDF view to scroll through the pages.'
+      ) .
+      '</dd>';
+      $output .= '<dt>' . t('Download Document Objects') . '</dt><dd>' . t(
+        'There are multiple ways to download a Document from your website:
+        1. If you just want the PDF version of your Document, then you can
+        view the PDF and use the download functionality provided by that viewer.
+        2. If you want the original file type version of your Document, you can
+        click the "Download document" link below the preview in the "View" tab
+        of the Document object.
+        2. For any datastream--such as the Preview image, the Thumbnail image, the
+        PDF, or the OBJ (the original version of the object)--you can go to the
+        "Manage" tab of your desired object, click on the "Datastreams" section
+        and, click "Download" next to the desired datastream.'
+      ) .
+      '</dd>';
+
+      return $output;
+
+    // Other cases can be added for various admin pages.
+  }
+}
