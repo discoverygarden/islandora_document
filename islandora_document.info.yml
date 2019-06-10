@@ -1,5 +1,5 @@
 name: 'Islandora Document'
-description: 'A default Islandora Repository module to handle documents'
+description: 'Adds document ingest and display functionality.'
 dependencies:
   - :islandora
   - file
