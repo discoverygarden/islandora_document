@@ -197,7 +197,5 @@ function islandora_document_help($route) {
       '</dd>';
 
       return $output;
-
-    // Other cases can be added for various admin pages.
   }
 }
