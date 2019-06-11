@@ -178,17 +178,17 @@ function islandora_document_help($route) {
       // About section.
       $output = '<h3>' . t('About') . '</h3>';
       $output .= '<p>' . t(
-        'The Islandora Document module adds the ability to upload and manage documents in a Document Collection. File types that are considered to be documents include: ODT, SXW, RTF, DOC, DOCX, WPD, TXT, HTML, ODS, SXC, XLS, XLSX, CSV, TSV, ODP, SXI, PPT, PPTX, and PDF. PDF derivatives are created for viewing Document objects.'
+        'The Islandora Document module adds the ability to upload and manage documents. File types that are considered to be documents include: ODT, SXW, RTF, DOC, DOCX, WPD, TXT, HTML, ODS, SXC, XLS, XLSX, CSV, TSV, ODP, SXI, PPT, PPTX, and PDF. PDF derivatives are created for viewing Document objects.'
       ) .
       '</p>';
       // Uses section.
       $output .= '<h3>' . t('Uses') . '</h3>';
       $output .= '<dt>' . t('Upload Document Objects') . '</dt><dd>' . t(
-        'In the "Manage" tab of the Document Collection, click "Add an object to this Collection", and follow the ingest form.'
+        'In the "Manage" tab of any collection configured to accept the Islandora Document Content Model, click "Add an object to this Collection", and follow the ingest form.'
       ) .
       '</dd>';
       $output .= '<dt>' . t('View Document Objects') . '</dt><dd>' . t(
-        'In the "View" tab of the Document Collection, click on the thumbnail for your desired object; that will bring you to the preview in the "View" tab of the object. Clicking on the preview will allow you to view the PDF how your browser typically displays PDF files. If the Document is multiple pages, you will have to use the PDF view to scroll through the pages.'
+        'In the "View" tab of the collection containing the desired document, click on the thumbnail for your desired object; that will bring you to the preview in the "View" tab of the object. Clicking on the preview will allow you to view the PDF how your browser typically displays PDF files. If the Document is multiple pages, you will have to use the PDF view to scroll through the pages.'
       ) .
       '</dd>';
       $output .= '<dt>' . t('Download Document Objects') . '</dt><dd>' . t(
